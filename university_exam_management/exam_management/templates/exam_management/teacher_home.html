@@ -1,0 +1,22 @@
+<!-- exam_management/templates/exam_management/teacher_home.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teacher Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Teacher Dashboard</h1>
+        <p>Hello, {{ user.first_name }}!</p>
+        <ul>
+            <!-- Link to view assigned answer sheets for grading -->
+            <li><a href="{% url 'list_answer_sheets_for_teacher' %}">View Assigned Papers</a></li>
+            <!-- Link to view re-evaluation requests -->
+            <li><a href="{% url 'view_revaluation_requests' %}">View Re-evaluation Requests</a></li>
+        </ul>
+        <!-- Add a logout link here -->
+        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+    </div>
+</body>
+</html>

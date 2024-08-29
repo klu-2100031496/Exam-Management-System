@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Revaluation Requests</h2>
+
+    {% if revaluation_requests %}
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">Student</th>
+                <th scope="col">Answer Sheet</th>
+                <th scope="col">Reason</th>
+                <th scope="col">Processed</th>
+                <th scope="col">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in revaluation_requests %}
+            <tr>
+                <td>{{ request.student.username }}</td>
+                <td>{{ request.answer_sheet }}</td>
+                <td>{{ request.reason }}</td>
+                <td>{{ request.is_processed|yesno:"Yes,No" }}</td>
+                <td>
+                    <a href="{% url 'revaluate_answer_sheet' request.answer_sheet.id %}" class="btn btn-primary btn-sm">Re-Evaluate</a>
+                    <!-- Add other actions here if needed -->
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No revaluation requests found.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Request Revaluation for {{ answer_sheet.student.username }}</h2>
+    <form method="post" action="{% url 'revaluation_request' answer_sheet.id %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="reason" class="form-label">Reason for Re-evaluation</label>
+            <textarea name="reason" id="reason" class="form-control" rows="4" placeholder="Enter your reason for re-evaluation" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-warning">Submit Request</button>
+    </form>
+</div>
+{% endblock %}
+
+

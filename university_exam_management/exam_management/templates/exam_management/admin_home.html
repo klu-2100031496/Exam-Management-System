@@ -1,0 +1,19 @@
+<!-- admin_home.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to the Admin Dashboard</h1>
+        <p>Hello, {{ user.first_name }}!</p>
+        <ul>
+            <li><a href="{% url 'upload_answer_sheet' %}">Upload Answer Sheets</a></li>
+            <!-- Add other admin-specific links here -->
+        </ul>
+        <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+    </div>
+</body>
+</html>

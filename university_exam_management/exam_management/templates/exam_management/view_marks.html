@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Marks for Your Answer Sheet</h2>
+{% if evaluation %}
+    <ul>
+        {% for question, mark in evaluation.get_marks.items %}
+            <li>Question {{ question }}: {{ mark }}</li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Your answer sheet has not been evaluated yet.</p>
+{% endif %}
+{% endblock %}

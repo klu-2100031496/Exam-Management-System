@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Welcome to the Student Dashboard</h1>
+    <p>Hello, {{ user.first_name }}!</p>
+    <ul>
+        <li><a href="{% url 'list_answer_sheets_for_student' %}">View Uploaded Answer Sheets</a></li>
+        {% for sheet in answer_sheets %}
+            <li>
+                <a href="{% url 'view_marks' sheet.id %}">Check Marks for {{ sheet.file.name }}</a>
+                <!-- Add a re-evaluation link for each sheet -->
+                {% if not sheet.evaluation_set.exists %}
+                    <a href="{% url 'revaluation_request' sheet.id %}">Apply for Re-evaluation</a>
+                {% else %}
+                    Re-evaluation Not Possible
+                {% endif %}
+            </li>
+        {% empty %}
+            <li>No answer sheets uploaded yet.</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+</div>
+{% endblock %}
