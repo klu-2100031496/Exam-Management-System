@@ -5,7 +5,7 @@ register = template.Library()
 @register.filter
 def range_filter(value):
     """Returns a range of numbers."""
-    return range(1, value)
+    return range(value)
 
 @register.filter
 def get_item(dictionary, key):

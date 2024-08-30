@@ -68,33 +68,40 @@ def evaluate_answer_sheet(request, answer_sheet_id):
         'marks': evaluation.marks if evaluation else {},
         'can_evaluate': not evaluation.is_final or RevaluationRequest.objects.filter(answer_sheet=answer_sheet).exists(),
     }
-    return render(request, 'evaluate_answer_sheet.html', context)
+    return render(request, 'exam_management/evaluate_answer_sheet.html', context)
 
 
 
 
+@login_required
 def revaluate_answer_sheet(request, answer_sheet_id):
     answer_sheet = get_object_or_404(AnswerSheet, id=answer_sheet_id)
+    
+    # Ensure there's an existing evaluation for this answer sheet
+    evaluation = get_object_or_404(Evaluation, answer_sheet=answer_sheet)
 
-    # Check if revaluation is allowed
-    can_evaluate = answer_sheet.is_evaluated and request.user.has_perm('can_revaluate')
+    # Load the existing marks if present
+    marks = evaluation.get_marks()
 
-    # Handle form submission
-    if request.method == "POST" and can_evaluate:
-        for i in range(1, 11):
-            marks = request.POST.get(f'marks_{i}', 0)
-            # Save the updated marks to your model
-            answer_sheet.marks[i-1] = marks  # Assuming a list or similar structure
-        answer_sheet.is_evaluated = True  # Re-mark as evaluated
-        answer_sheet.save()
-        return redirect('revaluation_success')  # Redirect after successful revaluation
+    if request.method == 'POST':
+        form = EvaluationForm(request.POST)
+        if form.is_valid():
+            # Update marks in the evaluation
+            evaluation.marks = form.cleaned_data
+            evaluation.is_final = True
+            evaluation.save()
 
-    # Get the current marks (if any)
-    marks = {i: answer_sheet.marks.get(i-1, 0) for i in range(1, 11)}
+            # Mark the revaluation request as processed
+            RevaluationRequest.objects.filter(answer_sheet=answer_sheet, is_processed=False).update(is_processed=True)
+            return redirect('exam_management/view_revaluation_requests')
+    else:
+        # Prepopulate the form with existing marks
+        form = EvaluationForm(initial=marks)
 
     return render(request, 'exam_management/evaluate_answer_sheet.html', {
         'answer_sheet': answer_sheet,
-        'can_evaluate': can_evaluate,
+        'form': form,
+        'can_evaluate': True,  # Allow evaluation since this is a revaluation request
         'marks': marks,
     })
 

@@ -1,50 +1,49 @@
 {% extends "base.html" %}
 
+{% load custom_filters %}
 {% block content %}
 <h2>Evaluate Answer Sheet for {{ answer_sheet.student.username }}</h2>
 
-<!-- Button to trigger the modal -->
-<a href="#" onclick="openModal('{{ answer_sheet.file.url }}'); return false;">View Answer Sheet</a>
-
-{% if can_evaluate %}
-    <!-- Form for entering marks -->
-    <form method="post" action="{% url 'evaluate_answer_sheet' answer_sheet.id %}">
-        {% csrf_token %}
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Question</th>
-                    <th>Marks</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for i in 1|slice:":11" %}
-                <tr>
-                    <td>Question {{ i }}</td>
-                    <td>
-                        <input type="number" name="marks_{{ i }}" min="0" step="0.1" value="{{ marks|get_item:i|default:0 }}">
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <button type="submit" class="btn btn-primary">Submit Evaluation</button>
-    </form>
-{% else %}
-    <p>This paper has already been evaluated and cannot be re-evaluated unless a revaluation request is made.</p>
-{% endif %}
-
-<!-- Modal for PDF viewing -->
-<div id="pdfModal" class="modal fade" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="pdfModalLabel">View PDF</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <iframe id="pdfFrame" src="" width="100%" height="600px" style="border: none;"></iframe>
-            </div>
+<!-- Container for PDF viewing and marks entry -->
+<div class="container">
+    <div class="row">
+        <!-- Column for PDF viewing -->
+        <div class="col-12 mb-4">
+            <h3>Answer Sheet</h3>
+            <iframe id="pdfFrame" src="{{ answer_sheet.file.url }}" width="100%" height="800px" style="border: none;"></iframe>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Column for marks entry -->
+        <div class="col-12">
+            {% if can_evaluate %}
+                <form method="post" action="{% url 'evaluate_answer_sheet' answer_sheet.id %}">
+                    {% csrf_token %}
+                    <h3>Enter Marks</h3>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Question</th>
+                                <th>Marks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in 11|range_filter %}
+                            <tr>
+                                <td>Question {{ i }}</td>
+                                <td>
+                                    <input type="number" name="marks_{{ i }}" min="0" step="0.1" value="{{ marks|get_item:i|default:0 }}">
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <button type="submit" class="btn btn-primary">Submit Evaluation</button>
+                </form>
+            {% else %}
+                <p>This paper has already been evaluated and cannot be re-evaluated unless a revaluation request is made.</p>
+            {% endif %}
         </div>
     </div>
 </div>
@@ -52,16 +51,5 @@
 <!-- Bootstrap CSS and JS (ensure these are included in your base.html) -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- JavaScript to open the modal and set the PDF URL -->
-<script>
-    function openModal(pdfUrl) {
-        document.getElementById('pdfFrame').src = pdfUrl;
-        var pdfModal = new bootstrap.Modal(document.getElementById('pdfModal'), {
-            keyboard: false
-        });
-        pdfModal.show();
-    }
-</script>
 
 {% endblock %}
